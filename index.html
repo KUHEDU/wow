@@ -332,6 +332,7 @@ footer .wrap{font-size:13px;color:#8E8E94}
 @media (max-width:720px){.ab-g{grid-template-columns:minmax(0,1fr)}}
 /* 스크롤 중엔 마우스 올림 효과 끄기(휠 아래로 버튼이 지나가며 그림자·들썩임이 연달아 켜지는 버벅임) */
 .scrolling body{pointer-events:none}
+html.embed{scrollbar-gutter:stable}html.elock{overflow:hidden}
 /* 문장 엠블럼: 뜻에 맞는 동작 — 한 번 동작하고 쉬었다 반복(transform 과 따로 노는 translate·rotate·scale, 가속되는 속성만) */
 .f-w{position:relative;display:block;width:min(330px,100%)}
 .f-w .f-em{width:100%}
@@ -674,6 +675,15 @@ function flyFrame(vw,vh,lag){
   if(S)FE.forEach((e,i)=>put(e,S[i]));
   if(fx){FX.style.opacity=fx.o.toFixed(3);FX.style.transform='translate3d('+fx.x.toFixed(1)+'px,'+fx.y.toFixed(1)+'px,0) scale('+(fx.s/FB).toFixed(4)+')'}else if(FX)FX.style.opacity=0}
 if(/[?&]w=1/.test(location.search)){const wb=document.createElement('div');wb.style.cssText='position:fixed;right:8px;bottom:8px;z-index:99;padding:6px 10px;border-radius:8px;background:rgba(0,0,0,.75);color:#fff;font:600 13px/1 monospace';document.body.appendChild(wb);const wu=()=>{wb.textContent=innerWidth+' × '+innerHeight};wu();addEventListener('resize',wu)}
+if(window.top!==window.self){DE.classList.add('embed','elock');
+  const sen=document.createElement('div');sen.setAttribute('aria-hidden','true');sen.style.cssText='position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;visibility:hidden';document.body.appendChild(sen);
+  let io=null,lastB=-1,same=0,lt=0;
+  const decide=es=>{const e=es[es.length-1];if(!e||!e.isIntersecting)return;const r=e.intersectionRect,h=innerHeight,t=Math.round(r.top),bt=Math.round(r.bottom),tH=t>2,bH=bt<h-2;
+    if(DE.classList.contains('elock'))same=(bt===lastB&&(tH||bH))?same+1:0;lastB=bt;DE.classList.toggle('elock',tH!==bH&&same<4)};
+  const look=()=>{try{if(io)io.disconnect();io=new IntersectionObserver(decide,{threshold:[0,.25,.5,.75,.9,.97,1]});io.observe(sen)}catch(err){DE.classList.remove('elock')}};
+  look();setTimeout(look,700);setTimeout(look,2000);
+  const poke=()=>{const n=performance.now();if(n-lt>90){lt=n;look()}};
+  addEventListener('wheel',poke,{passive:true});addEventListener('touchmove',poke,{passive:true});addEventListener('pointermove',poke,{passive:true})}
 if(FLY){DE.classList.add('fly');g9o();addEventListener('resize',g9o);addEventListener('load',g9o)}
 // ── 캠페인 5단계: 스크롤이 닿은 단계까지, 한 단계씩 천천히(선이 먼저 뻗고 → 동그라미가 켜짐)
 let fN=0,fT=0,fB=false;
